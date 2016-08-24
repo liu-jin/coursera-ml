@@ -23,6 +23,23 @@ sigma = 0.3;
 %        mean(double(predictions ~= yval))
 %
 
+errors = zeros(64,1);
+pv = [0.01; 0.03; 0.1; 0.3; 1; 3; 10; 30];
+for i = 1:8
+	for j = 1:8
+		model= svmTrain(X, y, pv(i), @(x1, x2) gaussianKernel(x1, x2, pv(j))); 
+		predictions = svmPredict(model, Xval);
+		temp = mean(double(predictions ~= yval));
+		temp2 = (i - 1) * 8 + j;
+		errors(temp2,1) = temp;
+	end
+end
+
+[C I] = min(errors);
+
+C = pv((I-mod(I,8))/8+1);
+sigma = pv(mod(I,8));
+
 
 
 
